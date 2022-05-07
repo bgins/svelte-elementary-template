@@ -19,8 +19,7 @@
 
   let config: instrument.Config = {
     selectedController: 'keyboard',
-    keyboardStatus: 'playing',
-    sequencerStatus: 'paused'
+    keyboardStatus: 'playing'
   }
 
   onMount(async () => {

@@ -3,7 +3,6 @@ import { tune } from '$lib/tuning'
 export type Config = {
   selectedController: 'keyboard' | 'midi' | 'none'
   keyboardStatus: 'playing' | 'typing'
-  sequencerStatus: 'playing' | 'paused'
 }
 
 export type Voice = { gate: number; freq: number; key: string }
