@@ -1,15 +1,16 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from 'svelte'
 
-  import type { EventEmitter } from '$lib/common/event-emitter'
   import type { Config } from '$lib/instruments'
+  import type { EventEmitter } from '$lib/common/event-emitter'
+  import type { NoteEventMap } from '$lib/controllers'
 
   import { audioStore, midiInputs, midiStatus, tuning } from '../../stores'
   import { BaseSynth } from '$lib/instruments/base-synth'
   import Knob from '$components/controls/Knob.svelte'
 
   export let config: Config
-  export let noteEmitter: EventEmitter
+  export let noteEmitter: EventEmitter<NoteEventMap>
 
   const dispatch = createEventDispatcher()
   const synth = new BaseSynth()
@@ -22,13 +23,13 @@
     dispatch('suspendaudio')
   }
 
-  const playNote = (midiNote: number): void => {
+  const playNote = ({ midiNote }: { midiNote: number }): void => {
     if ($audioStore.elementaryReady) {
       dispatch('render', { node: synth.playNote(midiNote) })
     }
   }
 
-  const stopNote = (midiNote: number): void => {
+  const stopNote = ({ midiNote }: { midiNote: number }): void => {
     if ($audioStore.elementaryReady) {
       dispatch('render', { node: synth.stopNote(midiNote) })
     }
@@ -43,7 +44,7 @@
   const setTuning = (event: Event) => {
     const { value: selectedTuning } = event.target as HTMLInputElement
 
-    noteEmitter.dispatchEvent('stopAll')
+    noteEmitter.emit('stopAll')
     tuning.set(selectedTuning)
   }
 
@@ -69,7 +70,7 @@
       config.selectedController === 'keyboard' &&
       config.keyboardStatus === 'typing'
     ) {
-      noteEmitter.dispatchEvent('stopAll')
+      noteEmitter.emit('stopAll')
       removeEventListeners()
     } else {
       addEventListeners()
@@ -77,15 +78,15 @@
   }
 
   const addEventListeners = (): void => {
-    noteEmitter.addEventListener('play', playNote)
-    noteEmitter.addEventListener('stop', stopNote)
-    noteEmitter.addEventListener('stopAll', stopAllNotes)
+    noteEmitter.on('play', playNote)
+    noteEmitter.on('stop', stopNote)
+    noteEmitter.on('stopAll', stopAllNotes)
   }
 
   const removeEventListeners = (): void => {
-    noteEmitter.removeEventListener('play', playNote)
-    noteEmitter.removeEventListener('stop', stopNote)
-    noteEmitter.removeEventListener('stopAll', stopAllNotes)
+    noteEmitter.removeListener('play', playNote)
+    noteEmitter.removeListener('stop', stopNote)
+    noteEmitter.removeListener('stopAll', stopAllNotes)
   }
 
   addEventListeners()

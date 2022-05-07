@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
 
   import type { NodeRepr_t } from '@elemaudio/core'
+  import type { NoteEventMap } from '$lib/controllers'
   import type * as instrument from '$lib/instruments'
 
   import { Engine } from '$lib/engine'
@@ -13,7 +14,7 @@
   const engine = new Engine()
   const keyboard = new Keyboard()
   const midi = new Midi()
-  const noteEmitter = new EventEmitter()
+  const noteEmitter: EventEmitter<NoteEventMap> = new EventEmitter()
 
   keyboard.enable(noteEmitter)
 
@@ -31,7 +32,7 @@
   }
 
   const suspendAudio = async () => {
-    noteEmitter.dispatchEvent('stopAll')
+    noteEmitter.emit('stopAll')
     await engine.suspendAudio()
   }
 
