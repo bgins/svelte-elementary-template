@@ -7,14 +7,12 @@ import type { MidiStatus } from '$lib/controllers/midi'
 
 type AudioStore = {
   context: AudioContext
-  contextState: AudioContextState
   elementaryReady: boolean
   core: WebAudioRenderer
 }
 
 export const audioStore: Writable<AudioStore> = writable({
   context: null,
-  contextState: 'closed',
   elementaryReady: false,
   core: null
 })

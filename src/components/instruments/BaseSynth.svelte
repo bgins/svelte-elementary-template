@@ -18,8 +18,8 @@
     dispatch('startaudio')
   }
 
-  const pauseAudio = () => {
-    dispatch('pauseaudio')
+  const suspendAudio = () => {
+    dispatch('suspendaudio')
   }
 
   const playNote = (midiNote: number): void => {
@@ -104,9 +104,9 @@
     </div>
     <div class="grid grid-flow-row auto-rows-max gap-7">
       <div class="grid grid-flow-col auto-cols-max gap-4">
-        {#if $audioStore.contextState === 'running'}
-          <button class="btn btn-primary" on:click={pauseAudio}>
-            Pause Audio
+        {#if $audioStore.context.state === 'running'}
+          <button class="btn btn-primary" on:click={suspendAudio}>
+            Suspend Audio
           </button>
         {:else}
           <button class="btn btn-primary" on:click={startAudio}>

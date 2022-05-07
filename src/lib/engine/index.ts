@@ -13,14 +13,13 @@ export class Engine {
 
     if (!store.context) {
       const context = new window.AudioContext()
+      void context.suspend()
 
       audioStore.update(store => ({
         ...store,
         context,
-        contextState: 'suspended',
         core
       }))
-      void context.suspend()
     }
 
     core.on('load', function () {
@@ -40,25 +39,28 @@ export class Engine {
     node.connect(context.destination)
   }
 
-  start = (): void => {
+  startAudio = async (): Promise<void> => {
     const { context } = get(audioStore)
 
-    void context.resume()
-    audioStore.update(store => ({ ...store, contextState: 'running' }))
+    await context.resume()
+    audioStore.update(store => ({ ...store, context }))
   }
 
-  pause = (): void => {
+  suspendAudio = async (): Promise<void> => {
     const { context } = get(audioStore)
 
-    void context.suspend()
-    audioStore.update(store => ({ ...store, contextState: 'suspended' }))
+    await context.suspend()
+    audioStore.update(store => ({ ...store, context }))
   }
 
   render = (ensemble: number | NodeRepr_t): void => {
-    const { core } = get(audioStore)
-    const dcblockOut = el.dcblock(ensemble)
-    const gainOut = el.mul(dcblockOut, 3)
+    const { context, core, elementaryReady } = get(audioStore)
 
-    core.render(gainOut, gainOut)
+    if (elementaryReady && context.state === 'running') {
+      const dcblockOut = el.dcblock(ensemble)
+      const gainOut = el.mul(dcblockOut, 3)
+
+      core.render(gainOut, gainOut)
+    }
   }
 }

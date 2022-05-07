@@ -27,13 +27,13 @@
     await engine.initialize()
   })
 
-  const startEngine = () => {
-    engine.start()
+  const startAudio = async () => {
+    await engine.startAudio()
   }
 
-  const pauseEngine = () => {
+  const suspendAudio = async () => {
     noteEmitter.dispatchEvent('stopAll')
-    engine.pause()
+    await engine.suspendAudio()
   }
 
   const render = (event: CustomEvent<{ node: number | NodeRepr_t }>) => {
@@ -97,8 +97,8 @@
     on:midiinput={setMidiInput}
     on:paramfocus={setKeyboardStatus}
     on:render={render}
-    on:pauseaudio={pauseEngine}
-    on:startaudio={startEngine}
+    on:startaudio={startAudio}
+    on:suspendaudio={suspendAudio}
   />
 </div>
 
