@@ -1,6 +1,7 @@
 import { get } from 'svelte/store'
 import { tuning } from '../../stores'
 
+
 export const tune = (midiNote: number): number => {
   const selectedTuning = get(tuning)
 
