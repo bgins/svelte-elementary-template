@@ -1,87 +1,95 @@
 import { get } from 'svelte/store'
+import { WebMidi } from 'webmidi'
+
 import { midiInputs, midiStatus } from '../../stores'
 
 import type { EventEmitter } from '$lib/common/event-emitter'
+import type { Input } from 'webmidi'
 import type { NoteEventMap } from '$lib/controllers'
+
 
 export type MidiStatus = 'enabled' | 'disabled' | 'unavailable'
 
 export class Midi {
   midiAccess: WebMidi.MIDIAccess
+  inputs: Input[]
+  selectedInput: Input
   noteEmitter: EventEmitter<NoteEventMap>
   abortController = new AbortController()
 
   constructor() {
-    this.initialize().catch(err => { throw err })
-  }
-
-  initialize = async (): Promise<void> => {
     if (navigator.requestMIDIAccess !== undefined) {
-
-      try {
-        this.midiAccess = await navigator.requestMIDIAccess()
-        const inputs = Array.from(this.midiAccess.inputs, ([_, input]) => input)
-          .reduce((inputs, input) => ({ ...inputs, [input.name]: input }), {})
-
-        midiInputs.set(inputs)
-        midiStatus.set('disabled')
-      } catch {
-        console.warn('WebMidi not available in this browser')
-        midiStatus.set('unavailable')
-      }
-
+      WebMidi
+        .enable()
+        .then(this.initialize)
+        .catch(err => {
+          console.warn('WebMidi could not be initialized:', err)
+          midiStatus.set('unavailable')
+        })
     } else {
       console.warn('WebMidi not available in this browser')
       midiStatus.set('unavailable')
     }
   }
 
+  initialize = (): void => {
+    this.inputs = WebMidi.inputs
+    const inputNames = this.inputs.map(input => input.name)
+
+    midiInputs.set(inputNames)
+    midiStatus.set('disabled')
+  }
+
   enable = (noteEmitter: EventEmitter<NoteEventMap>): void => {
     this.noteEmitter = noteEmitter
     const status = get(midiStatus)
 
-    if (status !== 'unavailable' && this.midiAccess) {
+    if (status !== 'unavailable') {
       midiStatus.set('enabled')
-      const firstInput = this.midiAccess.inputs.entries().next().value
+      const input = this.selectedInput ?? (this.inputs[0] ?? null)
 
-      if (firstInput) {
-        this.setInput(firstInput[1].name)
+      if (input) {
+        this.setInput(input.name)
+      } else {
+        console.warn('No MIDI devices available')
       }
     }
   }
 
   setInput = (name: string): void => {
     const status = get(midiStatus)
-    const inputs = get(midiInputs)
-
-    // Remove all event listeners
-    this.abortController.abort()
-    this.abortController = new AbortController()
 
     if (status === 'enabled') {
-      inputs[name].addEventListener('midimessage', event => {
-        const { data } = event
+      this.noteEmitter.emit('stopAll')
 
-        if (data.length === 2 || data.length === 3) {
-          const status = `0x${data[0].toString(16)}`
-          let midiNote: number
+      // Remove listeners from the previous input
+      if (this.selectedInput) {
+        this.selectedInput.removeListener('noteon')
+        this.selectedInput.removeListener('noteoff')
+      }
 
-          switch (status) {
-            case '0x90':
-              midiNote = data[1]
-              this.noteEmitter.emit('play', { midiNote })
-              break
+      // Set the new input
+      this.selectedInput = WebMidi.getInputByName(name)
 
-            case '0x80':
-              midiNote = data[1]
-              this.noteEmitter.emit('stop', { midiNote })
-              break
+      // Add listeners
+      this.selectedInput.addListener('noteon', event => {
+        const status = get(midiStatus)
 
-            default:
-              break
-          }
+        if (status === 'enabled') {
+          const midiNote = event.note.number
+          this.noteEmitter.emit('play', { midiNote })
         }
-      }, { signal: this.abortController.signal })
+      })
+
+      this.selectedInput.addListener('noteoff', event => {
+        const status = get(midiStatus)
+
+        if (status === 'enabled') {
+          const midiNote = event.note.number
+          this.noteEmitter.emit('stop', { midiNote })
+        }
+      })
+
     } else {
       console.error('WebMidi not enabled')
     }
@@ -92,7 +100,6 @@ export class Midi {
       this.noteEmitter.emit('stopAll')
     }
 
-    this.abortController.abort()
     this.noteEmitter = null
     midiStatus.set('disabled')
   }

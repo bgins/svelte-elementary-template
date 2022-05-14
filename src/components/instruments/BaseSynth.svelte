@@ -14,6 +14,7 @@
 
   const dispatch = createEventDispatcher()
   const synth = new BaseSynth()
+  let selectedMidiInput
 
   const startAudio = () => {
     dispatch('startaudio')
@@ -137,10 +138,11 @@
           <select
             class="select w-full max-w-xs select-primary"
             on:change={setMidiInput}
+            bind:value={selectedMidiInput}
           >
-            {#each Object.keys($midiInputs) as midiInput}
-              <option>{midiInput}</option>
-            {/each}
+          {#each $midiInputs as midiInput}
+              <option value={midiInput}>{midiInput}</option>
+          {/each}
           </select>
         {:else if $midiStatus === 'unavailable'}
           <div class="tooltip" data-tip="MIDI unavailable in this browser">

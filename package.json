@@ -42,7 +42,8 @@
   "dependencies": {
     "@elemaudio/core": "^1.0.0",
     "@elemaudio/web-renderer-lite": "^1.0.0",
-    "rxjs": "^7.5.4"
+    "rxjs": "^7.5.4",
+    "webmidi": "^3.0.20"
   },
   "ava": {
     "extensions": {
