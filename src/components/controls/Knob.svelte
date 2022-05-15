@@ -5,13 +5,16 @@
 
   export let id: string
   export let label: string
-  export let min: number = 0
-  export let max: number = 100
+  export let polarity: 'unipolar' | 'bipolar' = 'unipolar'
+  export let min: number = polarity === 'unipolar' ? 0 : -50
+  export let max: number = polarity === 'unipolar' ? 100 : 50
 
   const dispatch = createEventDispatcher()
 
   const setKnobSource = (theme: string) =>
-    theme === 'light' ? 'knobs/dark-knob.png' : 'knobs/light-knob.png'
+    theme === 'light'
+      ? `knobs/${polarity}-dark-knob.png`
+      : `knobs/${polarity}-light-knob.png`
 
   let knobSource = setKnobSource($theme)
 
