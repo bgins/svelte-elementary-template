@@ -1,9 +1,12 @@
-import type { Writable } from 'svelte/store'
-import type WebAudioRenderer from '@elemaudio/web-renderer-lite'
-
 import { writable } from 'svelte/store'
 
+import type WebAudioRenderer from '@elemaudio/web-renderer-lite'
+import type { Writable } from 'svelte/store'
+
+import { loadTheme } from '$lib/theme'
+
 import type { MidiStatus } from '$lib/controllers/midi'
+import type { Theme } from '$lib/theme'
 
 type AudioStore = {
   context: AudioContext
@@ -16,6 +19,8 @@ export const audioStore: Writable<AudioStore> = writable({
   elementaryReady: false,
   core: null
 })
+
+export const theme: Writable<Theme> = writable(loadTheme())
 
 export const tuning: Writable<string> = writable('ED2-12')
 

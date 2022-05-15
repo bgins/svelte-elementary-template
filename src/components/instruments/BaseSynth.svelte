@@ -5,7 +5,13 @@
   import type { EventEmitter } from '$lib/common/event-emitter'
   import type { NoteEventMap } from '$lib/controllers'
 
-  import { audioStore, midiInputs, midiStatus, tuning } from '../../stores'
+  import {
+    audioStore,
+    midiInputs,
+    midiStatus,
+    theme,
+    tuning
+  } from '../../stores'
   import { BaseSynth } from '$lib/instruments/base-synth'
   import Knob from '$components/controls/Knob.svelte'
 
@@ -15,6 +21,11 @@
   const dispatch = createEventDispatcher()
   const synth = new BaseSynth()
   let selectedMidiInput
+  let selectedTheme: string
+
+  const unsubscribeTheme = theme.subscribe(val => {
+    selectedTheme = val
+  })
 
   const startAudio = () => {
     dispatch('startaudio')
@@ -61,6 +72,16 @@
     dispatch('midiinput', { midiInput })
   }
 
+  const setTheme = (event: Event) => {
+    const { checked } = event.target as HTMLInputElement
+
+    if (checked) {
+      theme.set('dark')
+    } else {
+      theme.set('light')
+    }
+  }
+
   const setValFromKnob = (event: CustomEvent<{ value: number }>) => {
     const { value } = event.detail
     console.log('knob value', value)
@@ -94,15 +115,28 @@
 
   onDestroy(() => {
     removeEventListeners()
+    unsubscribeTheme()
   })
 </script>
 
 <div class="card bg-base-100 shadow-xl" style="width: 950px">
   <div class="card-body">
-    <div class="grid grid-flow-col align-center pb-6">
+    <div class="grid grid-flow-col grid-cols-[2fr_1fr] align-center pb-6">
       <h1 class="text-4xl" style="display: inline-block">
         Svelte Elementary Template
       </h1>
+      <div
+        class="grid grid-flow-col auto-cols-max content-center justify-end gap-2"
+      >
+        <span>Light</span>
+        <input
+          type="checkbox"
+          class="toggle toggle-xs mt-1"
+          checked={selectedTheme === 'dark'}
+          on:change={setTheme}
+        />
+        <span>Dark</span>
+      </div>
     </div>
     <div class="grid grid-flow-row auto-rows-max gap-7">
       <div class="grid grid-flow-col auto-cols-max gap-4">
@@ -140,9 +174,9 @@
             on:change={setMidiInput}
             bind:value={selectedMidiInput}
           >
-          {#each $midiInputs as midiInput}
+            {#each $midiInputs as midiInput}
               <option value={midiInput}>{midiInput}</option>
-          {/each}
+            {/each}
           </select>
         {:else if $midiStatus === 'unavailable'}
           <div class="tooltip" data-tip="MIDI unavailable in this browser">

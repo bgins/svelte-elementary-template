@@ -1,12 +1,19 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
 
+  import { theme } from '../../stores'
+
   export let id: string
   export let label: string
   export let min: number = 0
   export let max: number = 100
 
   const dispatch = createEventDispatcher()
+
+  const setKnobSource = (theme: string) =>
+    theme === 'light' ? 'knobs/dark-knob.png' : 'knobs/light-knob.png'
+
+  let knobSource = setKnobSource($theme)
 
   const setValue = (event: { type: string; target: HTMLInputElement }) => {
     const { value } = event.target
@@ -39,13 +46,17 @@
         break
     }
   }
+
+  $: {
+    knobSource = setKnobSource($theme)
+  }
 </script>
 
 <div class="knob-group">
   <label for={id} class="text-sm">{label}</label>
   <webaudio-knob
     {id}
-    src="knobs/knob.png"
+    src={knobSource}
     {min}
     {max}
     on:input={setValue}
