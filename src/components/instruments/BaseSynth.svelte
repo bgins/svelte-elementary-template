@@ -6,7 +6,7 @@
   import type { NoteEventMap } from '$lib/controllers'
 
   import {
-    audioStore,
+    engineStore,
     midiInputs,
     midiStatus,
     theme,
@@ -36,19 +36,19 @@
   }
 
   const playNote = ({ midiNote }: { midiNote: number }): void => {
-    if ($audioStore.elementaryReady) {
+    if ($engineStore.elementaryReady) {
       dispatch('render', { node: synth.playNote(midiNote) })
     }
   }
 
   const stopNote = ({ midiNote }: { midiNote: number }): void => {
-    if ($audioStore.elementaryReady) {
+    if ($engineStore.elementaryReady) {
       dispatch('render', { node: synth.stopNote(midiNote) })
     }
   }
 
   const stopAllNotes = () => {
-    if ($audioStore.elementaryReady) {
+    if ($engineStore.elementaryReady) {
       dispatch('render', { node: synth.stopAllNotes() })
     }
   }
@@ -140,7 +140,7 @@
     </div>
     <div class="grid grid-flow-row auto-rows-max gap-7">
       <div class="grid grid-flow-col auto-cols-max gap-4">
-        {#if $audioStore.context.state === 'running'}
+        {#if $engineStore.context.state === 'running'}
           <button class="btn btn-primary" on:click={suspendAudio}>
             Suspend Audio
           </button>

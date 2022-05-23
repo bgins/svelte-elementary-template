@@ -2,20 +2,20 @@ import { el } from '@elemaudio/core'
 import { get } from 'svelte/store'
 import WebRenderer from '@elemaudio/web-renderer-lite'
 
-import { audioStore } from '../../stores'
+import { engineStore } from '../../stores'
 
 import type { NodeRepr_t } from '@elemaudio/core'
 
 export class Engine {
   constructor() {
-    const store = get(audioStore)
+    const store = get(engineStore)
     const core = new WebRenderer()
 
     if (!store.context) {
       const context = new window.AudioContext()
       void context.suspend()
 
-      audioStore.update(store => ({
+      engineStore.update(store => ({
         ...store,
         context,
         core
@@ -23,12 +23,12 @@ export class Engine {
     }
 
     core.on('load', function () {
-      audioStore.update(store => ({ ...store, elementaryReady: true }))
+      engineStore.update(store => ({ ...store, elementaryReady: true }))
     })
   }
 
   initialize = async (): Promise<void> => {
-    const { context, core } = get(audioStore)
+    const { context, core } = get(engineStore)
 
     const node = await core.initialize(context, {
       numberOfInputs: 0,
@@ -40,21 +40,21 @@ export class Engine {
   }
 
   startAudio = async (): Promise<void> => {
-    const { context } = get(audioStore)
+    const { context } = get(engineStore)
 
     await context.resume()
-    audioStore.update(store => ({ ...store, context }))
+    engineStore.update(store => ({ ...store, context }))
   }
 
   suspendAudio = async (): Promise<void> => {
-    const { context } = get(audioStore)
+    const { context } = get(engineStore)
 
     await context.suspend()
-    audioStore.update(store => ({ ...store, context }))
+    engineStore.update(store => ({ ...store, context }))
   }
 
   render = (ensemble: number | NodeRepr_t): void => {
-    const { context, core, elementaryReady } = get(audioStore)
+    const { context, core, elementaryReady } = get(engineStore)
 
     if (elementaryReady && context.state === 'running') {
       const dcblockOut = el.dcblock(ensemble)

@@ -8,13 +8,13 @@ import { loadTheme } from '$lib/theme'
 import type { MidiStatus } from '$lib/controllers/midi'
 import type { Theme } from '$lib/theme'
 
-type AudioStore = {
+type EngineStore = {
   context: AudioContext
   elementaryReady: boolean
   core: WebAudioRenderer
 }
 
-export const audioStore: Writable<AudioStore> = writable({
+export const engineStore: Writable<EngineStore> = writable({
   context: null,
   elementaryReady: false,
   core: null
