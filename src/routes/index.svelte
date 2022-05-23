@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import type { NodeRepr_t } from '@elemaudio/core'
   import type { NoteEventMap } from '$lib/controllers'
   import type * as instrument from '$lib/instruments'
 
@@ -36,10 +35,10 @@
     await engine.suspendAudio()
   }
 
-  const render = (event: CustomEvent<{ node: number | NodeRepr_t }>) => {
-    const { node } = event.detail
+  const render = (event: CustomEvent<{ channels: instrument.Channels }>) => {
+    const { channels } = event.detail
 
-    engine.render(node)
+    engine.render(channels)
   }
 
   const setController = (event: CustomEvent<{ controller: string }>) => {

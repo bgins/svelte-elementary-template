@@ -4,7 +4,7 @@ import WebRenderer from '@elemaudio/web-renderer-lite'
 
 import { engineStore } from '../../stores'
 
-import type { NodeRepr_t } from '@elemaudio/core'
+import type { Channels } from '$lib/instruments'
 
 export class Engine {
   constructor() {
@@ -33,7 +33,7 @@ export class Engine {
     const node = await core.initialize(context, {
       numberOfInputs: 0,
       numberOfOutputs: 1,
-      outputChannelCount: [3],
+      outputChannelCount: [2],
     })
 
     node.connect(context.destination)
@@ -53,14 +53,15 @@ export class Engine {
     engineStore.update(store => ({ ...store, context }))
   }
 
-  render = (ensemble: number | NodeRepr_t): void => {
+  render = (channels: Channels): void => {
     const { context, core, elementaryReady } = get(engineStore)
 
     if (elementaryReady && context.state === 'running') {
-      const dcblockOut = el.dcblock(ensemble)
-      const gainOut = el.mul(dcblockOut, 3)
+      const leftBlockedOut = el.dcblock(channels.left)
+      const rightBlockedOut = el.dcblock(channels.right)
 
-      core.render(gainOut, gainOut)
+      core.render(leftBlockedOut, rightBlockedOut)
+
     }
   }
 }

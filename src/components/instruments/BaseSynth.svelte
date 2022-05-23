@@ -12,6 +12,7 @@
     theme,
     tuning
   } from '../../stores'
+  import { translateToRange } from '$lib/common/utils'
   import { BaseSynth } from '$lib/instruments/base-synth'
   import Knob from '$components/controls/Knob.svelte'
 
@@ -19,7 +20,8 @@
   export let noteEmitter: EventEmitter<NoteEventMap>
 
   const dispatch = createEventDispatcher()
-  const synth = new BaseSynth()
+  const synth = new BaseSynth({ panning: 0.5 })
+  let panning: number = 0
   let selectedMidiInput
   let selectedTheme: string
 
@@ -37,19 +39,19 @@
 
   const playNote = ({ midiNote }: { midiNote: number }): void => {
     if ($engineStore.elementaryReady) {
-      dispatch('render', { node: synth.playNote(midiNote) })
+      dispatch('render', { channels: synth.playNote(midiNote) })
     }
   }
 
   const stopNote = ({ midiNote }: { midiNote: number }): void => {
     if ($engineStore.elementaryReady) {
-      dispatch('render', { node: synth.stopNote(midiNote) })
+      dispatch('render', { channels: synth.stopNote(midiNote) })
     }
   }
 
   const stopAllNotes = () => {
     if ($engineStore.elementaryReady) {
-      dispatch('render', { node: synth.stopAllNotes() })
+      dispatch('render', { channels: synth.stopAllNotes() })
     }
   }
 
@@ -82,9 +84,20 @@
     }
   }
 
-  const setValFromKnob = (event: CustomEvent<{ value: number }>) => {
+  const setPanning = (event: CustomEvent<{ value: number }>) => {
     const { value } = event.detail
-    console.log('knob value', value)
+
+    panning = value
+
+    const panValue = translateToRange({
+      num: panning,
+      original: { min: -100, max: 100 },
+      scaled: { min: synth.limits.panning.min, max: synth.limits.panning.max }
+    })
+
+    if ($engineStore.elementaryReady) {
+      dispatch('render', { channels: synth.setPanning(panValue) })
+    }
   }
 
   $: {
@@ -191,9 +204,11 @@
         {/if}
       </div>
       <Knob
-        id="knob-1"
-        label="Detune"
-        on:input={setValFromKnob}
+        id="pan"
+        label="Pan"
+        polarity="bipolar"
+        value={panning}
+        on:input={setPanning}
         on:paramfocus
       />
     </div>
