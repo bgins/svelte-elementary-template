@@ -6,9 +6,10 @@
   export let id: string
   export let label: string
   export let polarity: 'unipolar' | 'bipolar' = 'unipolar'
+  export let value: number = polarity === 'unipolar' ? 50 : 0
+  export let step: number = 1
   export let min: number = polarity === 'unipolar' ? 0 : -100
   export let max: number = polarity === 'unipolar' ? 100 : 100
-  export let value: number = polarity === 'unipolar' ? 50 : 0
 
   const dispatch = createEventDispatcher()
 
@@ -63,9 +64,10 @@
   <webaudio-knob
     {id}
     src={knobSource}
+    {value}
+    {step}
     {min}
     {max}
-    {value}
     on:input={setValue}
     on:change={setValue}
   />
