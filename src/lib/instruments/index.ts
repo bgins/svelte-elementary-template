@@ -1,9 +1,13 @@
+import type { NodeRepr_t } from '@elemaudio/core'
+
 import { tune } from '$lib/tuning'
 
 export type Config = {
   selectedController: 'keyboard' | 'midi' | 'none'
   keyboardStatus: 'playing' | 'typing'
 }
+
+export type Channels = { left: NodeRepr_t | number; right: NodeRepr_t | number }
 
 export type Voice = { gate: number; freq: number; key: string }
 

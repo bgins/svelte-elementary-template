@@ -6,8 +6,9 @@
   export let id: string
   export let label: string
   export let polarity: 'unipolar' | 'bipolar' = 'unipolar'
-  export let min: number = polarity === 'unipolar' ? 0 : -50
-  export let max: number = polarity === 'unipolar' ? 100 : 50
+  export let min: number = polarity === 'unipolar' ? 0 : -100
+  export let max: number = polarity === 'unipolar' ? 100 : 100
+  export let value: number = polarity === 'unipolar' ? 50 : 0
 
   const dispatch = createEventDispatcher()
 
@@ -19,7 +20,9 @@
   let knobSource = setKnobSource($theme)
 
   const setValue = (event: { type: string; target: HTMLInputElement }) => {
-    const { value } = event.target
+    const { value: val } = event.target
+
+    value = +val
 
     switch (event.type) {
       case 'input':
@@ -62,6 +65,7 @@
     src={knobSource}
     {min}
     {max}
+    {value}
     on:input={setValue}
     on:change={setValue}
   />
