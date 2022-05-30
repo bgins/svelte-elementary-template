@@ -18,14 +18,18 @@ const getDivisions = tuning => {
     case 'ED2-5':
       return 5
 
-    case 'ED2-8':
-      return 8
+    case 'ED2-7':
+      return 7
 
     case 'ED2-12':
       return 12
 
-    case 'ED2-13':
-      return 13
+    case 'ED2-17':
+      return 17
+
+    case 'ED2-19':
+      return 19
+
 
     default:
       return 12

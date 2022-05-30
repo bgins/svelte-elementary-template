@@ -185,9 +185,10 @@
         >
           <option disabled selected value="ED2-12">Tuning System</option>
           <option value="ED2-5">5-TET</option>
-          <option value="ED2-8">8-TET</option>
+          <option value="ED2-7">7-TET</option>
           <option value="ED2-12">12-TET</option>
-          <option value="ED2-13">13-TET</option>
+          <option value="ED2-17">17-TET</option>
+          <option value="ED2-19">19-TET</option>
         </select>
         <select
           class="select w-full max-w-xs select-primary"
