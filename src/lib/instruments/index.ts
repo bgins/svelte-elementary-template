@@ -18,5 +18,5 @@ export const updateVoices = (voices: Voice[], midiNote: number): Voice[] => {
 
   console.log(`MIDI note: ${midiNote}`, `, Frequency: ${freq}`)
 
-  return voices.filter(voice => voice.key !== key).concat({ gate: 0.1, freq, key })
+  return voices.filter(voice => voice.key !== key).concat({ gate: 1, freq, key })
 }

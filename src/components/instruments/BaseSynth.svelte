@@ -20,7 +20,8 @@
   export let noteEmitter: EventEmitter<NoteEventMap>
 
   const dispatch = createEventDispatcher()
-  const synth = new BaseSynth({ panning: 0.5 })
+  const synth = new BaseSynth({ gain: 0.6, panning: 0.5 })
+  let gain: number = 60
   let panning: number = 0
   let selectedMidiInput
   let selectedTheme: string
@@ -97,6 +98,22 @@
 
     if ($engineStore.elementaryReady) {
       dispatch('render', { channels: synth.setPanning(panValue) })
+    }
+  }
+
+  const setGain = (event: CustomEvent<{ value: number }>) => {
+    const { value } = event.detail
+
+    gain = value
+
+    const gainValue = translateToRange({
+      num: gain,
+      original: { min: 0, max: 100 },
+      scaled: { min: synth.limits.gain.min, max: synth.limits.gain.max }
+    })
+
+    if ($engineStore.elementaryReady) {
+      dispatch('render', { channels: synth.setGain(gainValue) })
     }
   }
 
@@ -203,14 +220,23 @@
           </select>
         {/if}
       </div>
-      <Knob
-        id="pan"
-        label="Pan"
-        polarity="bipolar"
-        value={panning}
-        on:input={setPanning}
-        on:paramfocus
-      />
+      <div class="grid grid-flow-col auto-cols-max gap-5">
+        <Knob
+          id="pan"
+          label="Pan"
+          polarity="bipolar"
+          value={panning}
+          on:input={setPanning}
+          on:paramfocus
+        />
+        <Knob
+          id="gain"
+          label="Gain"
+          value={gain}
+          on:input={setGain}
+          on:paramfocus
+        />
+      </div>
     </div>
   </div>
 </div>
