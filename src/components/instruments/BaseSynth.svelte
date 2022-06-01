@@ -149,9 +149,9 @@
   })
 </script>
 
-<div class="card bg-base-100 shadow-xl" style="width: 950px">
+<div class="card bg-base-100 shadow-xl" style="width: 900px">
   <div class="card-body">
-    <div class="grid grid-flow-col grid-cols-[2fr_1fr] align-center pb-6">
+    <div class="grid grid-flow-col grid-cols-[2fr_1fr] align-center pb-5">
       <h1 class="text-4xl" style="display: inline-block">
         Svelte Elementary Template
       </h1>
@@ -168,8 +168,8 @@
         <span>Dark</span>
       </div>
     </div>
-    <div class="grid grid-flow-row auto-rows-max gap-7">
-      <div class="grid grid-flow-col auto-cols-max gap-4">
+    <div class="grid grid-flow-col grid-cols-[3fr_1fr]">
+      <div class="grid grid-flow-col auto-cols-max gap-4 items-center">
         {#if $engineStore.context.state === 'running'}
           <button class="btn btn-primary" on:click={suspendAudio}>
             Suspend Audio
@@ -210,7 +210,7 @@
             {/each}
           </select>
         {:else if $midiStatus === 'unavailable'}
-          <div class="tooltip" data-tip="MIDI unavailable in this browser">
+          <div class="tooltip" data-tip="MIDI not available in this browser">
             <select disabled class="select w-full max-w-xs select-primary">
               <option disabled selected>MIDI Device</option>
             </select>
@@ -221,7 +221,9 @@
           </select>
         {/if}
       </div>
-      <div class="grid grid-flow-col auto-cols-max gap-5">
+      <div
+        class="grid grid-flow-col auto-cols-max gap-4 items-center justify-end"
+      >
         <Knob
           id="pan"
           label="Pan"
