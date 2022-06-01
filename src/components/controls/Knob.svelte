@@ -6,7 +6,8 @@
   export let id: string
   export let label: string
   export let polarity: 'unipolar' | 'bipolar' = 'unipolar'
-  export let value: number = polarity === 'unipolar' ? 50 : 0
+  export const defaultValue = polarity === 'unipolar' ? 50 : 0
+  export let value: number = defaultValue
   export let step: number = 1
   export let min: number = polarity === 'unipolar' ? 0 : -100
   export let max: number = polarity === 'unipolar' ? 100 : 100
@@ -37,6 +38,12 @@
       default:
         break
     }
+  }
+
+  const setDefaultValue = () => {
+    const value = defaultValue
+
+    dispatch('input', { value })
   }
 
   const setParamFocus = (event: { type: string; target: HTMLInputElement }) => {
@@ -70,9 +77,11 @@
     {max}
     on:input={setValue}
     on:change={setValue}
+    on:dblclick={setDefaultValue}
   />
   <webaudio-param
     link={id}
+    {value}
     width="32"
     height="18"
     fontsize="11"
