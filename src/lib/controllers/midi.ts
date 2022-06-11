@@ -1,11 +1,11 @@
 import { get } from 'svelte/store'
-import { WebMidi } from 'webmidi'
+import { Input, WebMidi } from 'webmidi'
 
 import { midiInputs, midiStatus } from '../../stores'
 
 import type { EventEmitter } from '$lib/common/event-emitter'
-import type { Input } from 'webmidi'
 import type { NoteEventMap } from '$lib/controllers'
+import type { Output } from 'webmidi'
 
 
 export type MidiStatus = 'enabled' | 'disabled' | 'unavailable'
@@ -35,6 +35,22 @@ export class Midi {
   initialize = (): void => {
     this.inputs = WebMidi.inputs
     const inputNames = this.inputs.map(input => input.name)
+
+    WebMidi.addListener('connected', (event: { port: Input | Output }) => {
+      const { port } = event
+
+      if (port instanceof Input) {
+        midiInputs.set([...inputNames, port.name])
+      }
+    })
+
+    WebMidi.addListener('disconnected', (event: { port: Input | Output }) => {
+      const { port } = event
+
+      if (port instanceof Input) {
+        midiInputs.set(inputNames.filter(name => name !== port.name))
+      }
+    })
 
     midiInputs.set(inputNames)
     midiStatus.set('disabled')
