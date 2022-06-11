@@ -13,6 +13,22 @@ export const tune = (midiNote: number): number => {
   return frequency
 }
 
+/**
+ * Get the divisions of an octave for a tuning
+ * 
+ * Tunings are internally named by the number of divisions of 
+ * a harmonic. For example, 12-tone equal temperament is named ED2-12:
+ * 
+ *   - ED is equal divisions
+ *   - 2 is the second harmonic (the octave)
+ *   - 12 is the number of divisions
+ * 
+ * This terminology is more precise that 12-TET but less familiar
+ * to users.
+ * 
+ * @param tuning tuning name
+ * @returns divisions of an octave
+ */
 const getDivisions = tuning => {
   switch (tuning) {
     case 'ED2-5':
