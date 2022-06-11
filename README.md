@@ -8,6 +8,7 @@ Features include:
 - ✨ **Starter synth.** A simple synth with pan and gain controls.
 - 🎹 **MIDI and Keyboard controllers.** Play the synth with your computer keyboard or MIDI device.
 - 🎛️ **Knobs.** [webaudio-controls](https://g200kg.github.io/webaudio-controls/docs/index.html) unipolar and bipolar knobs with a custom knob component.
+- 💠 **Microtunings.** Five equal temperaments. Easy to add more.
 - 🌒 **Dark and Light Themes.** Built with [daisyUI](https://daisyui.com/). Includes default dark and light themes.
 - 💻 **App publishing with Fission.** Publish your app to the web in a few simple steps.
 
