@@ -11,6 +11,7 @@ export type BaseSynthConfig = {
   panning: number
 }
 
+// Limits provide ranges that UI components should target
 export type BaseSynthLimits = {
   gain: { min: number; max: number }
   panning: { min: number; max: number }
@@ -104,6 +105,14 @@ const silence = (): Channels => {
   }
 }
 
+/**
+ * Gain with exponential response curve over a 100dB dynamic range.
+ * See https://www.dr-lex.be/info-stuff/volumecontrols.html#ideal2
+ * 
+ * @param node input node
+ * @param gainValue gain value between 0 and 1
+ * @returns node with gain applied
+ */
 const gain = (node: NodeRepr_t | number, gainValue: number): NodeRepr_t | number => {
   return el.mul(
     node,
@@ -114,6 +123,13 @@ const gain = (node: NodeRepr_t | number, gainValue: number): NodeRepr_t | number
   )
 }
 
+/**
+ * Linear panning.
+ *  
+ * @param node input node
+ * @param panVal pan value between 0 and 1
+ * @returns node with pan applied
+ */
 const pan = (node: NodeRepr_t | number, panVal: number): Channels => {
   const left = el.mul(el.sm(el.const({ key: 'leftPanValue', value: 1 - panVal })), node)
   const right = el.mul(el.sm(el.const({ key: 'rightPanValue', value: panVal })), node)
