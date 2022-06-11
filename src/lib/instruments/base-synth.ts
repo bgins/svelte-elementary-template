@@ -106,7 +106,7 @@ const silence = (): Channels => {
 }
 
 /**
- * Gain with exponential response curve over a 100dB dynamic range.
+ * Gain with exponential response curve over a 60dB dynamic range.
  * See https://www.dr-lex.be/info-stuff/volumecontrols.html#ideal2
  * 
  * @param node input node
@@ -117,8 +117,8 @@ const gain = (node: NodeRepr_t | number, gainValue: number): NodeRepr_t | number
   return el.mul(
     node,
     el.div(
-      el.exp(el.mul(el.sm(el.const({ key: 'gain', value: gainValue })), 11.51)),
-      10000
+      el.exp(el.mul(el.sm(el.const({ key: 'gain', value: gainValue })), 6.908)),
+      1000
     )
   )
 }
