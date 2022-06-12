@@ -44,6 +44,10 @@ The build outputs the static site to the `build` directory.
 
 Update `src/app.html` with your title and social preview tags. Replace the social preview image `static/preview.png` with a preview image for your app.
 
+Themes can be customized in `tailwind.config.cjs`. Update the `dark` and `light` themes with your colors and styles. See the [daisyUI themes guide](https://daisyui.com/docs/themes/) for more information.
+
+Knobs can be customized and replaced with knobs from the [WebKnobMan gallery](https://www.g200kg.com/en/webknobman/gallery.php). You may need to adjust the styles and the size of the `webaudio-param` in `src/components/controls/Knob.svelte` to match your knob. The default [unipolar knob](https://www.g200kg.com/en/webknobman/index.html?f=ST_knob_HarmonicWhite_37x37_128f.knob&n=1806) and [bipolar knob](https://www.g200kg.com/en/webknobman/index.html?f=ST_knob_HarmonicWhitePan_37x37_127f.knob&n=1807) can be themed in the WebKnobMan editor.
+
 ## Publish
 
 The built site publishes with the [Fission CLI](https://guide.fission.codes/developers/cli) and the [Fission GH publish action](https://github.com/fission-suite/publish-action). Publishing from the command line is configured in [fission.yaml](fission.yaml), and the GitHub publish action is configured in [publish.yml](.github/workflows/publish.yml).
