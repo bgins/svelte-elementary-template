@@ -52,9 +52,9 @@ Knobs can be customized and replaced with knobs from the [WebKnobMan gallery](ht
 
 The built site publishes with the [Fission CLI](https://guide.fission.codes/developers/cli) and the [Fission GH publish action](https://github.com/fission-suite/publish-action). Publishing from the command line is configured in [fission.yaml](fission.yaml), and the GitHub publish action is configured in [publish.yml](.github/workflows/publish.yml).
 
-To configure your own CLI publishing:
+To setup publishing with the Fission CLI:
 
-1. [Install the Fission CLI](https://guide.fission.codes/developers/installation)
+1. [Install the CLI](https://guide.fission.codes/developers/installation)
 2. Run `fission setup` to make a Fission account
 3. Run `npm run build` to build the app
 4. Delete `fission.yaml`
@@ -65,9 +65,10 @@ After publishing, your app will be available online at the domain assigned by th
 
 To set up the GitHub publish action:
 
-1. Export your machine key with `base64 ~/.config/fission/key/machine_id.ed25519`
-2. Add your machine key as a GH Repository secret named `FISSION_MACHINE_KEY`
-2. Update the `publish.yml` with the name of your registered app
+1. Reigster the app with the CLI
+2. Export your machine key with `base64 ~/.config/fission/key/machine_id.ed25519`
+3. Add your machine key as a GH Repository secret named `FISSION_MACHINE_KEY`
+4. Update the `publish.yml` with the name of your registered app
 
 See the [Fission Guide](https://guide.fission.codes/developers/installation) and the publish action README for more details.
 
