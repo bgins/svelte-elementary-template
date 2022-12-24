@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-import type WebAudioRenderer from '@elemaudio/web-renderer-lite'
+import type WebAudioRenderer from '@elemaudio/web-renderer'
 import type { Writable } from 'svelte/store'
 
 import { loadTheme } from '$lib/theme'

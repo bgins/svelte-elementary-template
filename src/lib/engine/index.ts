@@ -1,6 +1,6 @@
 import { el } from '@elemaudio/core'
 import { get } from 'svelte/store'
-import WebRenderer from '@elemaudio/web-renderer-lite'
+import WebRenderer from '@elemaudio/web-renderer'
 
 import { engineStore } from '../../stores'
 
