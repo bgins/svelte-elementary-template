@@ -12,7 +12,7 @@ export class Engine {
     const core = new WebRenderer()
 
     if (!store.context) {
-      const context = new window.AudioContext()
+      const context = new AudioContext()
       void context.suspend()
 
       engineStore.update(store => ({
