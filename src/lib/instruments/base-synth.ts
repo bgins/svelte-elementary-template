@@ -1,8 +1,8 @@
-import { createNode, el, resolve } from '@elemaudio/core'
+import { el, resolve } from '@elemaudio/core'
 
 import { updateVoices } from '$lib/instruments'
 
-import type { NodeRepr_t } from '@elemaudio/core'
+import type { ElemNode } from '@elemaudio/core'
 import type { Channels, Voice } from '$lib/instruments'
 
 
@@ -74,22 +74,13 @@ export class BaseSynth {
 }
 
 const baseSynth = (voices: Voice[], gainValue: number, panValue: number): Channels => {
-  const node = el.add(...voices.map(voice => {
-    return createNode(synthVoice, { voice }, [])
-  }))
+  const node = el.add(...voices.map(voice => synthVoice(voice)))
   const gainOut = gain(node, gainValue)
 
   return pan(gainOut, panValue)
 }
 
-
-type SynthVoiceProps = {
-  voice: Voice
-}
-
-const synthVoice = ({ props }): NodeRepr_t => {
-  const { voice } = props as SynthVoiceProps
-
+const synthVoice = (voice: Voice): ElemNode => {
   return resolve(
     el.mul(
       el.const({ key: `${voice.key}:gate`, value: voice.gate }),
@@ -113,7 +104,7 @@ const silence = (): Channels => {
  * @param gainValue gain value between 0 and 1
  * @returns node with gain applied
  */
-const gain = (node: NodeRepr_t | number, gainValue: number): NodeRepr_t | number => {
+const gain = (node: ElemNode, gainValue: number): ElemNode => {
   return el.mul(
     node,
     el.div(
@@ -130,7 +121,7 @@ const gain = (node: NodeRepr_t | number, gainValue: number): NodeRepr_t | number
  * @param panVal pan value between 0 and 1
  * @returns node with pan applied
  */
-const pan = (node: NodeRepr_t | number, panVal: number): Channels => {
+const pan = (node: ElemNode, panVal: number): Channels => {
   const left = el.mul(el.sm(el.const({ key: 'leftPanValue', value: 1 - panVal })), node)
   const right = el.mul(el.sm(el.const({ key: 'rightPanValue', value: panVal })), node)
 
