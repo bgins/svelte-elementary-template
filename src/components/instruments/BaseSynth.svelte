@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from 'svelte'
 
-  import type { Config } from '$lib/instruments'
+  import type * as controller from '$lib/controllers'
   import type { EventEmitter } from '$lib/common/event-emitter'
   import type { NoteEventMap } from '$lib/controllers'
 
@@ -16,7 +16,7 @@
   import { BaseSynth } from '$lib/instruments/base-synth'
   import Knob from '$components/controls/Knob.svelte'
 
-  export let config: Config
+  export let controllerState: controller.State
   export let noteEmitter: EventEmitter<NoteEventMap>
 
   const dispatch = createEventDispatcher()
@@ -119,8 +119,8 @@
 
   $: {
     if (
-      config.selectedController === 'keyboard' &&
-      config.keyboardStatus === 'typing'
+      controllerState.selectedController === 'keyboard' &&
+      controllerState.keyboardStatus === 'typing'
     ) {
       noteEmitter.emit('stopAll')
       removeEventListeners()

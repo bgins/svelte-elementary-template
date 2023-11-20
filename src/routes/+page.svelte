@@ -3,6 +3,7 @@
 
   import type { NoteEventMap } from '$lib/controllers'
   import type * as instrument from '$lib/instruments'
+  import type * as controller from '$lib/controllers'
 
   import { Engine } from '$lib/engine'
   import { Keyboard } from '$lib/controllers/keyboard'
@@ -17,7 +18,7 @@
 
   keyboard.enable(noteEmitter)
 
-  let config: instrument.Config = {
+  let controllerState: controller.State = {
     selectedController: 'keyboard',
     keyboardStatus: 'playing'
   }
@@ -48,16 +49,16 @@
       keyboard.disable()
       midi.enable(noteEmitter)
 
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         selectedController: 'midi'
       }
     } else if (controller === 'Keyboard') {
       midi.disable()
       keyboard.enable(noteEmitter)
 
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         selectedController: 'keyboard'
       }
     }
@@ -73,13 +74,13 @@
     const { focused: paramFocused } = event.detail
 
     if (paramFocused) {
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         keyboardStatus: 'typing'
       }
     } else {
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         keyboardStatus: 'playing'
       }
     }
@@ -90,7 +91,7 @@
   class="grid grid-flow-row auto-rows-max justify-center bg-neutral h-screen p-10 text-base-content"
 >
   <BaseSynth
-    bind:config
+    bind:controllerState={controllerState}
     {noteEmitter}
     on:controller={setController}
     on:midiinput={setMidiInput}
