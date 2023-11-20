@@ -1,9 +1,8 @@
 import { el, resolve } from '@elemaudio/core'
 
-import { updateVoices } from '$lib/instruments'
-
 import type { ElemNode } from '@elemaudio/core'
-import type { Channels, Voice } from '$lib/instruments'
+import type { Channels } from '$lib/audio/engine'
+import { tune } from '$lib/tuning'
 
 
 export type BaseSynthConfig = {
@@ -17,6 +16,7 @@ export type BaseSynthLimits = {
   panning: { min: number; max: number }
 }
 
+type Voice = { gate: number; freq: number; key: string }
 
 export class BaseSynth {
   gain: number
@@ -78,6 +78,15 @@ const baseSynth = (voices: Voice[], gainValue: number, panValue: number): Channe
   const gainOut = gain(node, gainValue)
 
   return pan(gainOut, panValue)
+}
+
+function updateVoices(voices: Voice[], midiNote: number): Voice[] {
+  const key = `v${midiNote}`
+  const freq = tune(midiNote)
+
+  console.log(`MIDI note: ${midiNote}`, `, Frequency: ${freq}`)
+
+  return voices.filter(voice => voice.key !== key).concat({ gate: 1, freq, key })
 }
 
 const synthVoice = (voice: Voice): ElemNode => {

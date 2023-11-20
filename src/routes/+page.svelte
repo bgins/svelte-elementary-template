@@ -1,11 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import type { NoteEventMap } from '$lib/controllers'
-  import type * as instrument from '$lib/instruments'
   import type * as controller from '$lib/controllers'
-
-  import { Engine } from '$lib/engine'
+  import { type Channels, Engine } from '$lib/audio/engine'
   import { Keyboard } from '$lib/controllers/keyboard'
   import { Midi } from '$lib/controllers/midi'
   import { EventEmitter } from '$lib/common/event-emitter'
@@ -14,7 +11,7 @@
   const engine = new Engine()
   const keyboard = new Keyboard()
   const midi = new Midi()
-  const noteEmitter: EventEmitter<NoteEventMap> = new EventEmitter()
+  const noteEmitter: EventEmitter<controller.NoteEventMap> = new EventEmitter()
 
   keyboard.enable(noteEmitter)
 
@@ -36,7 +33,7 @@
     await engine.suspendAudio()
   }
 
-  const render = (event: CustomEvent<{ channels: instrument.Channels }>) => {
+  const render = (event: CustomEvent<{ channels: Channels }>) => {
     const { channels } = event.detail
 
     engine.render(channels)

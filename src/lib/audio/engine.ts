@@ -1,10 +1,10 @@
-import { el } from '@elemaudio/core'
+import { el, type ElemNode } from '@elemaudio/core'
 import { get } from 'svelte/store'
 import WebRenderer from '@elemaudio/web-renderer'
 
 import { engineStore } from '../../stores'
 
-import type { Channels } from '$lib/instruments'
+export type Channels = { left: ElemNode; right: ElemNode }
 
 export class Engine {
   constructor() {

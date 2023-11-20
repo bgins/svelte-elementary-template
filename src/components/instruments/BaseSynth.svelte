@@ -13,7 +13,7 @@
     tuning
   } from '../../stores'
   import { translateToRange } from '$lib/common/utils'
-  import { BaseSynth } from '$lib/instruments/base-synth'
+  import { BaseSynth } from '$lib/audio/synth'
   import Knob from '$components/controls/Knob.svelte'
 
   export let controllerState: controller.State
