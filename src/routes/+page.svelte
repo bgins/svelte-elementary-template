@@ -1,23 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import type { NoteEventMap } from '$lib/controllers'
-  import type * as instrument from '$lib/instruments'
-
-  import { Engine } from '$lib/engine'
+  import type * as controller from '$lib/controllers'
+  import { type Channels, Engine } from '$lib/audio/engine'
   import { Keyboard } from '$lib/controllers/keyboard'
   import { Midi } from '$lib/controllers/midi'
   import { EventEmitter } from '$lib/common/event-emitter'
-  import BaseSynth from '$components/instruments/BaseSynth.svelte'
+  import Synth from '$components/instruments/Synth.svelte'
 
   const engine = new Engine()
   const keyboard = new Keyboard()
   const midi = new Midi()
-  const noteEmitter: EventEmitter<NoteEventMap> = new EventEmitter()
+  const noteEmitter: EventEmitter<controller.NoteEventMap> = new EventEmitter()
 
   keyboard.enable(noteEmitter)
 
-  let config: instrument.Config = {
+  let controllerState: controller.State = {
     selectedController: 'keyboard',
     keyboardStatus: 'playing'
   }
@@ -26,60 +24,60 @@
     await engine.initialize()
   })
 
-  const startAudio = async () => {
+  async function startAudio() {
     await engine.startAudio()
   }
 
-  const suspendAudio = async () => {
+  async function suspendAudio() {
     noteEmitter.emit('stopAll')
     await engine.suspendAudio()
   }
 
-  const render = (event: CustomEvent<{ channels: instrument.Channels }>) => {
+  function render(event: CustomEvent<{ channels: Channels }>) {
     const { channels } = event.detail
 
     engine.render(channels)
   }
 
-  const setController = (event: CustomEvent<{ controller: string }>) => {
+  function setController(event: CustomEvent<{ controller: string }>) {
     const { controller } = event.detail
 
     if (controller === 'MIDI') {
       keyboard.disable()
       midi.enable(noteEmitter)
 
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         selectedController: 'midi'
       }
     } else if (controller === 'Keyboard') {
       midi.disable()
       keyboard.enable(noteEmitter)
 
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         selectedController: 'keyboard'
       }
     }
   }
 
-  const setMidiInput = (event: CustomEvent<{ midiInput: string }>) => {
+  function setMidiInput(event: CustomEvent<{ midiInput: string }>) {
     const { midiInput } = event.detail
 
     midi.setInput(midiInput)
   }
 
-  const setKeyboardStatus = (event: CustomEvent<{ focused: boolean }>) => {
+  function setKeyboardStatus(event: CustomEvent<{ focused: boolean }>) {
     const { focused: paramFocused } = event.detail
 
     if (paramFocused) {
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         keyboardStatus: 'typing'
       }
     } else {
-      config = {
-        ...config,
+      controllerState = {
+        ...controllerState,
         keyboardStatus: 'playing'
       }
     }
@@ -89,8 +87,8 @@
 <div
   class="grid grid-flow-row auto-rows-max justify-center bg-neutral h-screen p-10 text-base-content"
 >
-  <BaseSynth
-    bind:config
+  <Synth
+    bind:controllerState={controllerState}
     {noteEmitter}
     on:controller={setController}
     on:midiinput={setMidiInput}

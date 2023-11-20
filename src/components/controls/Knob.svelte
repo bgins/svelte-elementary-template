@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
 
-  import { theme } from '../../stores'
+  import { theme } from '$stores'
 
   export let id: string
   export let label: string
@@ -14,14 +14,15 @@
 
   const dispatch = createEventDispatcher()
 
-  const setKnobSource = (theme: string) =>
-    theme === 'light'
+  function setKnobSource(theme: string) { 
+    return theme === 'light'
       ? `knobs/${polarity}-dark-knob.png`
       : `knobs/${polarity}-light-knob.png`
+  }
 
   let knobSource = setKnobSource($theme)
 
-  const setValue = (event: { type: string; target: HTMLInputElement }) => {
+  function setValue(event: { type: string; target: HTMLInputElement }) {
     const { value: val } = event.target
 
     value = +val
@@ -40,13 +41,13 @@
     }
   }
 
-  const setDefaultValue = () => {
+  function setDefaultValue() {
     const value = defaultValue
 
     dispatch('input', { value })
   }
 
-  const setParamFocus = (event: { type: string; target: HTMLInputElement }) => {
+  function setParamFocus(event: { type: string; target: HTMLInputElement }) {
     switch (event.type) {
       case 'focus':
         dispatch('paramfocus', { focused: true })

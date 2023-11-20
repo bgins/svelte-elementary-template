@@ -1,34 +1,32 @@
-import { el, resolve } from '@elemaudio/core'
+import { el, resolve, type ElemNode } from '@elemaudio/core'
 
-import { updateVoices } from '$lib/instruments'
+import type { Channels } from '$lib/audio/engine'
+import { tune } from '$lib/tuning'
 
-import type { ElemNode } from '@elemaudio/core'
-import type { Channels, Voice } from '$lib/instruments'
-
-
-export type BaseSynthConfig = {
+type Config = {
   gain: number
   panning: number
 }
 
 // Limits provide ranges that UI components should target
-export type BaseSynthLimits = {
+type Limits = {
   gain: { min: number; max: number }
   panning: { min: number; max: number }
 }
 
+type Voice = { gate: number; freq: number; key: string }
 
-export class BaseSynth {
+export class Synth {
   gain: number
   panning: number
   voices: Voice[] = []
 
-  limits: BaseSynthLimits = {
+  limits: Limits = {
     gain: { min: 0, max: 1 },
     panning: { min: 0, max: 1 }
   }
 
-  constructor(config: BaseSynthConfig) {
+  constructor(config: Config) {
     this.gain = config.gain
     this.panning = config.panning
   }
@@ -36,7 +34,7 @@ export class BaseSynth {
   playNote = (midiNote: number): Channels => {
     this.voices = updateVoices(this.voices, midiNote).slice(-8)
 
-    return baseSynth(this.voices, this.gain, this.panning)
+    return synth(this.voices, this.gain, this.panning)
   }
 
   stopNote = (midiNote: number): Channels => {
@@ -44,7 +42,7 @@ export class BaseSynth {
     this.voices = this.voices.filter(voice => voice.key !== key)
 
     if (this.voices.length > 0) {
-      return baseSynth(this.voices, this.gain, this.panning)
+      return synth(this.voices, this.gain, this.panning)
     } else {
       return silence()
     }
@@ -60,7 +58,7 @@ export class BaseSynth {
     this.panning = panValue
 
     return this.voices.length > 0 ?
-      baseSynth(this.voices, this.gain, this.panning) :
+      synth(this.voices, this.gain, this.panning) :
       silence()
   }
 
@@ -68,19 +66,28 @@ export class BaseSynth {
     this.gain = gainValue
 
     return this.voices.length > 0 ?
-      baseSynth(this.voices, this.gain, this.panning) :
+      synth(this.voices, this.gain, this.panning) :
       silence()
   }
 }
 
-const baseSynth = (voices: Voice[], gainValue: number, panValue: number): Channels => {
+function synth(voices: Voice[], gainValue: number, panValue: number): Channels {
   const node = el.add(...voices.map(voice => synthVoice(voice)))
   const gainOut = gain(node, gainValue)
 
   return pan(gainOut, panValue)
 }
 
-const synthVoice = (voice: Voice): ElemNode => {
+function updateVoices(voices: Voice[], midiNote: number): Voice[] {
+  const key = `v${midiNote}`
+  const freq = tune(midiNote)
+
+  console.log(`MIDI note: ${midiNote}`, `, Frequency: ${freq}`)
+
+  return voices.filter(voice => voice.key !== key).concat({ gate: 1, freq, key })
+}
+
+function synthVoice(voice: Voice): ElemNode {
   return resolve(
     el.mul(
       el.const({ key: `${voice.key}:gate`, value: voice.gate }),
@@ -89,7 +96,7 @@ const synthVoice = (voice: Voice): ElemNode => {
   )
 }
 
-const silence = (): Channels => {
+function silence(): Channels {
   return {
     left: el.const({ key: 'silence', value: 0 }),
     right: el.const({ key: 'silence', value: 0 })
@@ -104,7 +111,7 @@ const silence = (): Channels => {
  * @param gainValue gain value between 0 and 1
  * @returns node with gain applied
  */
-const gain = (node: ElemNode, gainValue: number): ElemNode => {
+function gain(node: ElemNode, gainValue: number): ElemNode {
   return el.mul(
     node,
     el.div(
@@ -121,7 +128,7 @@ const gain = (node: ElemNode, gainValue: number): ElemNode => {
  * @param panVal pan value between 0 and 1
  * @returns node with pan applied
  */
-const pan = (node: ElemNode, panVal: number): Channels => {
+function pan(node: ElemNode, panVal: number): Channels {
   const left = el.mul(el.sm(el.const({ key: 'leftPanValue', value: 1 - panVal })), node)
   const right = el.mul(el.sm(el.const({ key: 'rightPanValue', value: panVal })), node)
 

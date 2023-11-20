@@ -1,9 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from 'svelte'
 
-  import type { Config } from '$lib/instruments'
+  import type * as controller from '$lib/controllers'
   import type { EventEmitter } from '$lib/common/event-emitter'
-  import type { NoteEventMap } from '$lib/controllers'
 
   import {
     engineStore,
@@ -11,16 +10,16 @@
     midiStatus,
     theme,
     tuning
-  } from '../../stores'
+  } from '$stores'
   import { translateToRange } from '$lib/common/utils'
-  import { BaseSynth } from '$lib/instruments/base-synth'
+  import { Synth } from '$lib/audio/synth'
   import Knob from '$components/controls/Knob.svelte'
 
-  export let config: Config
-  export let noteEmitter: EventEmitter<NoteEventMap>
+  export let controllerState: controller.State
+  export let noteEmitter: EventEmitter<controller.NoteEventMap>
 
   const dispatch = createEventDispatcher()
-  const synth = new BaseSynth({ gain: 0.6, panning: 0.5 })
+  const synth = new Synth({ gain: 0.6, panning: 0.5 })
   let gain: number = 60
   let panning: number = 0
   let selectedMidiInput
@@ -30,52 +29,52 @@
     selectedTheme = val
   })
 
-  const startAudio = () => {
+  function startAudio() {
     dispatch('startaudio')
   }
 
-  const suspendAudio = () => {
+  function suspendAudio() {
     dispatch('suspendaudio')
   }
 
-  const playNote = ({ midiNote }: { midiNote: number }): void => {
+  function playNote({ midiNote }: { midiNote: number }): void {
     if ($engineStore.elementaryReady) {
       dispatch('render', { channels: synth.playNote(midiNote) })
     }
   }
 
-  const stopNote = ({ midiNote }: { midiNote: number }): void => {
+  function stopNote({ midiNote }: { midiNote: number }): void {
     if ($engineStore.elementaryReady) {
       dispatch('render', { channels: synth.stopNote(midiNote) })
     }
   }
 
-  const stopAllNotes = () => {
+  function stopAllNotes() {
     if ($engineStore.elementaryReady) {
       dispatch('render', { channels: synth.stopAllNotes() })
     }
   }
 
-  const setTuning = (event: Event) => {
+  function setTuning(event: Event) {
     const { value: selectedTuning } = event.target as HTMLInputElement
 
     noteEmitter.emit('stopAll')
     tuning.set(selectedTuning)
   }
 
-  const setController = (event: Event) => {
+  function setController(event: Event) {
     const { value: controller } = event.target as HTMLInputElement
 
     dispatch('controller', { controller })
   }
 
-  const setMidiInput = (event: Event) => {
+  function setMidiInput(event: Event) {
     const { value: midiInput } = event.target as HTMLInputElement
 
     dispatch('midiinput', { midiInput })
   }
 
-  const setTheme = (event: Event) => {
+  function setTheme(event: Event) {
     const { checked } = event.target as HTMLInputElement
 
     if (checked) {
@@ -85,7 +84,7 @@
     }
   }
 
-  const setPanning = (event: CustomEvent<{ value: number }>) => {
+  function setPanning(event: CustomEvent<{ value: number }>) {
     const { value } = event.detail
 
     panning = value
@@ -101,7 +100,7 @@
     }
   }
 
-  const setGain = (event: CustomEvent<{ value: number }>) => {
+  function setGain(event: CustomEvent<{ value: number }>) {
     const { value } = event.detail
 
     gain = value
@@ -119,8 +118,8 @@
 
   $: {
     if (
-      config.selectedController === 'keyboard' &&
-      config.keyboardStatus === 'typing'
+      controllerState.selectedController === 'keyboard' &&
+      controllerState.keyboardStatus === 'typing'
     ) {
       noteEmitter.emit('stopAll')
       removeEventListeners()
@@ -129,13 +128,13 @@
     }
   }
 
-  const addEventListeners = (): void => {
+  function addEventListeners(): void {
     noteEmitter.on('play', playNote)
     noteEmitter.on('stop', stopNote)
     noteEmitter.on('stopAll', stopAllNotes)
   }
 
-  const removeEventListeners = (): void => {
+  function removeEventListeners(): void {
     noteEmitter.removeListener('play', playNote)
     noteEmitter.removeListener('stop', stopNote)
     noteEmitter.removeListener('stopAll', stopAllNotes)
