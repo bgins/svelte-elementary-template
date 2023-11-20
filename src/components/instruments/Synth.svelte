@@ -13,14 +13,14 @@
     tuning
   } from '../../stores'
   import { translateToRange } from '$lib/common/utils'
-  import { BaseSynth } from '$lib/audio/synth'
+  import { Synth } from '$lib/audio/synth'
   import Knob from '$components/controls/Knob.svelte'
 
   export let controllerState: controller.State
   export let noteEmitter: EventEmitter<NoteEventMap>
 
   const dispatch = createEventDispatcher()
-  const synth = new BaseSynth({ gain: 0.6, panning: 0.5 })
+  const synth = new Synth({ gain: 0.6, panning: 0.5 })
   let gain: number = 60
   let panning: number = 0
   let selectedMidiInput

@@ -6,7 +6,7 @@
   import { Keyboard } from '$lib/controllers/keyboard'
   import { Midi } from '$lib/controllers/midi'
   import { EventEmitter } from '$lib/common/event-emitter'
-  import BaseSynth from '$components/instruments/BaseSynth.svelte'
+  import Synth from '$components/instruments/Synth.svelte'
 
   const engine = new Engine()
   const keyboard = new Keyboard()
@@ -87,7 +87,7 @@
 <div
   class="grid grid-flow-row auto-rows-max justify-center bg-neutral h-screen p-10 text-base-content"
 >
-  <BaseSynth
+  <Synth
     bind:controllerState={controllerState}
     {noteEmitter}
     on:controller={setController}

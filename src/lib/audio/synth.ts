@@ -5,30 +5,30 @@ import type { Channels } from '$lib/audio/engine'
 import { tune } from '$lib/tuning'
 
 
-export type BaseSynthConfig = {
+type Config = {
   gain: number
   panning: number
 }
 
 // Limits provide ranges that UI components should target
-export type BaseSynthLimits = {
+type Limits = {
   gain: { min: number; max: number }
   panning: { min: number; max: number }
 }
 
 type Voice = { gate: number; freq: number; key: string }
 
-export class BaseSynth {
+export class Synth {
   gain: number
   panning: number
   voices: Voice[] = []
 
-  limits: BaseSynthLimits = {
+  limits: Limits = {
     gain: { min: 0, max: 1 },
     panning: { min: 0, max: 1 }
   }
 
-  constructor(config: BaseSynthConfig) {
+  constructor(config: Config) {
     this.gain = config.gain
     this.panning = config.panning
   }
@@ -36,7 +36,7 @@ export class BaseSynth {
   playNote = (midiNote: number): Channels => {
     this.voices = updateVoices(this.voices, midiNote).slice(-8)
 
-    return baseSynth(this.voices, this.gain, this.panning)
+    return synth(this.voices, this.gain, this.panning)
   }
 
   stopNote = (midiNote: number): Channels => {
@@ -44,7 +44,7 @@ export class BaseSynth {
     this.voices = this.voices.filter(voice => voice.key !== key)
 
     if (this.voices.length > 0) {
-      return baseSynth(this.voices, this.gain, this.panning)
+      return synth(this.voices, this.gain, this.panning)
     } else {
       return silence()
     }
@@ -60,7 +60,7 @@ export class BaseSynth {
     this.panning = panValue
 
     return this.voices.length > 0 ?
-      baseSynth(this.voices, this.gain, this.panning) :
+      synth(this.voices, this.gain, this.panning) :
       silence()
   }
 
@@ -68,12 +68,12 @@ export class BaseSynth {
     this.gain = gainValue
 
     return this.voices.length > 0 ?
-      baseSynth(this.voices, this.gain, this.panning) :
+      synth(this.voices, this.gain, this.panning) :
       silence()
   }
 }
 
-const baseSynth = (voices: Voice[], gainValue: number, panValue: number): Channels => {
+const synth = (voices: Voice[], gainValue: number, panValue: number): Channels => {
   const node = el.add(...voices.map(voice => synthVoice(voice)))
   const gainOut = gain(node, gainValue)
 
