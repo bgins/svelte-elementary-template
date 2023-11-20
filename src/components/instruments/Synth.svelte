@@ -3,7 +3,6 @@
 
   import type * as controller from '$lib/controllers'
   import type { EventEmitter } from '$lib/common/event-emitter'
-  import type { NoteEventMap } from '$lib/controllers'
 
   import {
     engineStore,
@@ -11,13 +10,13 @@
     midiStatus,
     theme,
     tuning
-  } from '../../stores'
+  } from '$stores'
   import { translateToRange } from '$lib/common/utils'
   import { Synth } from '$lib/audio/synth'
   import Knob from '$components/controls/Knob.svelte'
 
   export let controllerState: controller.State
-  export let noteEmitter: EventEmitter<NoteEventMap>
+  export let noteEmitter: EventEmitter<controller.NoteEventMap>
 
   const dispatch = createEventDispatcher()
   const synth = new Synth({ gain: 0.6, panning: 0.5 })

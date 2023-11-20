@@ -1,6 +1,6 @@
 <script lang="ts">
   import '../global.css'
-  import { theme } from '../stores'
+  import { theme } from '$stores'
   import { storeTheme } from '$lib/theme'
 
   theme.subscribe(val => {

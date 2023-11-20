@@ -1,12 +1,9 @@
 import { get } from 'svelte/store'
-import { Input, WebMidi } from 'webmidi'
-
-import { midiInputs, midiStatus } from '../../stores'
+import { Input, Output, WebMidi } from 'webmidi'
 
 import type { EventEmitter } from '$lib/common/event-emitter'
 import type { NoteEventMap } from '$lib/controllers'
-import type { Output } from 'webmidi'
-
+import { midiInputs, midiStatus } from '$stores'
 
 export type MidiStatus = 'enabled' | 'disabled' | 'unavailable'
 

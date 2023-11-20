@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
 
-  import { theme } from '../../stores'
+  import { theme } from '$stores'
 
   export let id: string
   export let label: string

@@ -2,7 +2,7 @@ import { el, type ElemNode } from '@elemaudio/core'
 import { get } from 'svelte/store'
 import WebRenderer from '@elemaudio/web-renderer'
 
-import { engineStore } from '../../stores'
+import { engineStore } from '$stores'
 
 export type Channels = { left: ElemNode; right: ElemNode }
 

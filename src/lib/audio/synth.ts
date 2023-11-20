@@ -1,9 +1,7 @@
-import { el, resolve } from '@elemaudio/core'
+import { el, resolve, type ElemNode } from '@elemaudio/core'
 
-import type { ElemNode } from '@elemaudio/core'
 import type { Channels } from '$lib/audio/engine'
 import { tune } from '$lib/tuning'
-
 
 type Config = {
   gain: number
