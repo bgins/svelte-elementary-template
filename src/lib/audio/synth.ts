@@ -73,7 +73,7 @@ export class Synth {
   }
 }
 
-const synth = (voices: Voice[], gainValue: number, panValue: number): Channels => {
+function synth(voices: Voice[], gainValue: number, panValue: number): Channels {
   const node = el.add(...voices.map(voice => synthVoice(voice)))
   const gainOut = gain(node, gainValue)
 
@@ -89,7 +89,7 @@ function updateVoices(voices: Voice[], midiNote: number): Voice[] {
   return voices.filter(voice => voice.key !== key).concat({ gate: 1, freq, key })
 }
 
-const synthVoice = (voice: Voice): ElemNode => {
+function synthVoice(voice: Voice): ElemNode {
   return resolve(
     el.mul(
       el.const({ key: `${voice.key}:gate`, value: voice.gate }),
@@ -98,7 +98,7 @@ const synthVoice = (voice: Voice): ElemNode => {
   )
 }
 
-const silence = (): Channels => {
+function silence(): Channels {
   return {
     left: el.const({ key: 'silence', value: 0 }),
     right: el.const({ key: 'silence', value: 0 })
@@ -113,7 +113,7 @@ const silence = (): Channels => {
  * @param gainValue gain value between 0 and 1
  * @returns node with gain applied
  */
-const gain = (node: ElemNode, gainValue: number): ElemNode => {
+function gain(node: ElemNode, gainValue: number): ElemNode {
   return el.mul(
     node,
     el.div(
@@ -130,7 +130,7 @@ const gain = (node: ElemNode, gainValue: number): ElemNode => {
  * @param panVal pan value between 0 and 1
  * @returns node with pan applied
  */
-const pan = (node: ElemNode, panVal: number): Channels => {
+function pan(node: ElemNode, panVal: number): Channels {
   const left = el.mul(el.sm(el.const({ key: 'leftPanValue', value: 1 - panVal })), node)
   const right = el.mul(el.sm(el.const({ key: 'rightPanValue', value: panVal })), node)
 

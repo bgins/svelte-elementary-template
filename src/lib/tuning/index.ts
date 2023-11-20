@@ -2,7 +2,7 @@ import { get } from 'svelte/store'
 import { tuning } from '../../stores'
 
 
-export const tune = (midiNote: number): number => {
+export function tune(midiNote: number): number {
   const selectedTuning = get(tuning)
 
   const baseFrequency = 440
@@ -29,7 +29,7 @@ export const tune = (midiNote: number): number => {
  * @param tuning tuning name
  * @returns divisions of an octave
  */
-const getDivisions = tuning => {
+function getDivisions(tuning) {
   switch (tuning) {
     case 'ED2-5':
       return 5

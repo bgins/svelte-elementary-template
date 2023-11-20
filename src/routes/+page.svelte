@@ -24,22 +24,22 @@
     await engine.initialize()
   })
 
-  const startAudio = async () => {
+  async function startAudio() {
     await engine.startAudio()
   }
 
-  const suspendAudio = async () => {
+  async function suspendAudio() {
     noteEmitter.emit('stopAll')
     await engine.suspendAudio()
   }
 
-  const render = (event: CustomEvent<{ channels: Channels }>) => {
+  function render(event: CustomEvent<{ channels: Channels }>) {
     const { channels } = event.detail
 
     engine.render(channels)
   }
 
-  const setController = (event: CustomEvent<{ controller: string }>) => {
+  function setController(event: CustomEvent<{ controller: string }>) {
     const { controller } = event.detail
 
     if (controller === 'MIDI') {
@@ -61,13 +61,13 @@
     }
   }
 
-  const setMidiInput = (event: CustomEvent<{ midiInput: string }>) => {
+  function setMidiInput(event: CustomEvent<{ midiInput: string }>) {
     const { midiInput } = event.detail
 
     midi.setInput(midiInput)
   }
 
-  const setKeyboardStatus = (event: CustomEvent<{ focused: boolean }>) => {
+  function setKeyboardStatus(event: CustomEvent<{ focused: boolean }>) {
     const { focused: paramFocused } = event.detail
 
     if (paramFocused) {
